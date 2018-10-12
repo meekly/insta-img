@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<title>INSTA-IMG</title>
+    </head>
+    <body>
+	<h1>Hello in my insta-img!</h1>
+	<a href="./register">Register NOW!</a>
+	<ul>
+ 	    <% users.each do |user| %>
+		<li><a href=<%= './user/' + user %>> <%= user %> </a> </li>
+	    <% end %>
+	</ul>
+
+    </body>
+</html>

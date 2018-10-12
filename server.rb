@@ -4,6 +4,7 @@ require 'sinatra'
 require 'find'
 require 'time'
 
+
 # A bunch of settings
 set :static, true
 set :bind, '0.0.0.0'
@@ -12,7 +13,21 @@ set :port, 3030
 PUBLIC_FOLDER = File.dirname(__FILE__) + '/public'
 
 get %r{/(users?)?} do
-  erb :index
+  files = Dir.entries(PUBLIC_FOLDER)
+
+  users = []
+  files.each do |file|
+    users.push(file) if File.directory?(File.join(PUBLIC_FOLDER, file)) and file !~ /^\./
+  end
+  users.sort!
+
+  erb :index, :locals => {
+        :users => users
+      }
+end
+
+get '/register' do
+  erb :register
 end
 
 post '/register' do
@@ -20,7 +35,7 @@ post '/register' do
   user = params[:user]
   user_folder = File.join(PUBLIC_FOLDER, user)
 
-  if File.file?(user_folder) then
+  if File.exist?(user_folder) then
     erb :already_registered, :locals => {
           :user => user,
         }

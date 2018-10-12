@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<title>INSTA-IMG</title>
+	<script src="jquery.js"></script>
+	<script src="main.js"></script>
+    </head>
+    <body>
+	<h1><%= user.capitalize %> space </h1>
+
+
+	<input id="profile-image-upload" class="hidden" type="file" text="Add">
+
+
+	<div class="container">
+	    <% images.each do |image| %>
+		<% # Here go images. Displayed with flexbox. %>
+		<div class="insta-img">
+		    <img src="<%= image %>" />
+		</div>
+	    <% end %>
+	</div>
+	<a name="<%=user%>" id="user"></a>
+    </body>
+</html>
