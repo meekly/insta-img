@@ -2,9 +2,12 @@ require 'find'
 
 task :default => [:bundle, :server_start]
 
-task :bundle do
+task :bundle => ['Gemfile'] do
     sh 'bundle install'
 end
+
+file 'Gemfile'
+
 
 task :server_start do
     ruby 'server.rb'

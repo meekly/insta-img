@@ -1,25 +1,26 @@
-<!DOCTYPE html>
-<html>
-    <head>
-	<title>INSTA-IMG</title>
-	<script src="jquery.js"></script>
-	<script src="main.js"></script>
-    </head>
-    <body>
-	<h1><%= user.capitalize %> space </h1>
+<h1><%= user.capitalize %> space </h1>
 
 
-	<input id="profile-image-upload" class="hidden" type="file" text="Add">
-
-
-	<div class="container">
-	    <% images.each do |image| %>
-		<% # Here go images. Displayed with flexbox. %>
-		<div class="insta-img">
-		    <img src="<%= image %>" />
-		</div>
-	    <% end %>
+<input id="image-holder" class="hidden" type="file" name="file">
+<button id="profile-image-upload" >Upload</button>
+<style>
+ .container {
+     position: absolute;
+     left: 10%;
+     right: 10%;
+     text-align: center;
+     margin-top: 15px;
+ }
+</style>
+<div class="container">
+    <% images.each do |image| %>
+	<% # Here go images. Displayed with flexbox. %>
+	<div class="insta-img">
+	    <a href="/user<%=image%>"> <img class="image" src="<%= image %>" style="width:100%; max-width: 700px; height:auto;"  /></a>
 	</div>
-	<a name="<%=user%>" id="user"></a>
-    </body>
-</html>
+    <% end %>
+</div>
+<a name="<%=user%>" id="user"></a>
+
+<script src="/jquery.js"></script>
+<script src="/main.js"></script>

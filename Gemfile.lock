@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     mini_magick (4.9.2)
+    multi_json (1.13.1)
     mustermann (1.0.3)
     rack (2.0.5)
     rack-protection (2.0.4)
@@ -18,6 +19,7 @@ PLATFORMS
 
 DEPENDENCIES
   mini_magick
+  multi_json (~> 1.13, >= 1.13.1)
   sinatra
 
 RUBY VERSION

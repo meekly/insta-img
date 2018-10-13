@@ -1,9 +1,12 @@
 #!/usr/bin/ruby
+# encoding: utf-8
 
 require 'sinatra'
 require 'find'
 require 'time'
-
+require 'json'
+require 'fileutils'
+require 'time'
 
 # A bunch of settings
 set :static, true
@@ -51,25 +54,18 @@ end
 get '/user/:name' do
   images = []
   user_folder = File.join(PUBLIC_FOLDER, params[:name])
-  if ! File.directory?(user_folder) then
+  if ! File.exist?(user_folder) then
     return erb :error, :locals => {
           :message => "No such a user '#{params[:name]}'."
         }
   end
   Find.find(user_folder) do |path|
-    images.push(path.sub(PUBLIC_FOLDER, ''))
+    images.push(path.sub(PUBLIC_FOLDER, '')) \
+      if path =~ /(jpg|png|jpeg|gif|bmp)$/
   end
 
   # Sorting by timestamp
-  images.sort! do |a, b|
-    tsa = a.match(/(\d+-\d+-\d+_\d+-\d+-\d+)/).captures
-    tsb = b.match(/(\d+-\d+-\d+_\d+-\d+-\d+)/).captures
-
-    ta = Time.strptime(tsa, '%d-%m-%Y_%H-%M-%S')
-    tb = Time.strptime(tsb, '%d-%m-%Y_%H-%M-%S')
-
-    ta <=> tb
-  end
+  images.sort!
 
   # Show user's images
   erb :user, :locals => {
@@ -78,11 +74,22 @@ get '/user/:name' do
       }
 end
 
-get '/user/:name/:image' do
+post '/user/:name', :provides => :json  do
+  # Posting an image to user
+  dest_filename = File.join(PUBLIC_FOLDER,
+                            params[:name],
+                            Time.now.utc.to_s + params[:file][:filename],
+                           )
+  # ImageMagic code:
+  FileUtils.cp(params[:file][:tempfile], dest_filename)
+  200
+end
+
+get '/user/:user/:image' do
 
   user = params[:user]
   image = params[:image]
-  image_path = File.join(PUBLIC_FOLDER, user, image)
+  image_path = File.join('/', user, image)
 
   # Show user's image
   erb :user_image, :locals => {
