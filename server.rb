@@ -7,6 +7,7 @@ require 'time'
 require 'json'
 require 'fileutils'
 require 'time'
+require 'mini_magick'
 
 # A bunch of settings
 set :static, true
@@ -14,6 +15,7 @@ set :bind, '0.0.0.0'
 set :port, 3030
 
 PUBLIC_FOLDER = File.dirname(__FILE__) + '/public'
+USE_IMAGE_MAGICK = (ARGV[0] == 'IM')
 
 get %r{/(users?)?} do
   files = Dir.entries(PUBLIC_FOLDER)
@@ -60,8 +62,9 @@ get '/user/:name' do
         }
   end
   Find.find(user_folder) do |path|
+    suffix = USE_IMAGE_MAGICK ? 'min300' : ''
     images.push(path.sub(PUBLIC_FOLDER, '')) \
-      if path =~ /(jpg|png|jpeg|gif|bmp)$/
+      if path =~ /(jpg|png|jpeg|gif|bmp)#{suffix}$/
   end
 
   # Sorting by timestamp
@@ -81,7 +84,15 @@ post '/user/:name', :provides => :json  do
                             Time.now.utc.to_s + params[:file][:filename],
                            )
   # ImageMagic code:
+
   FileUtils.cp(params[:file][:tempfile], dest_filename)
+  puts ARGV
+  if USE_IMAGE_MAGICK then
+    puts 'USING IMAGE MAGICK'
+    image = MiniMagick::Image.open(dest_filename)
+    image.resize '300x300'
+    image.write("#{dest_filename}min300")
+  end
   200
 end
 
@@ -89,11 +100,14 @@ get '/user/:user/:image' do
 
   user = params[:user]
   image = params[:image]
+  big_image = image.gsub('min300', '')
   image_path = File.join('/', user, image)
+  big_image_path = File.join('/', user, big_image)
+
 
   # Show user's image
   erb :user_image, :locals => {
         :user => user,
-        :image => image_path,
+        :image => File.exist?(big_image_path) ? big_image_path : image_path,
       }
 end
