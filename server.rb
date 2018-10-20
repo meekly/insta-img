@@ -86,9 +86,8 @@ post '/user/:name', :provides => :json  do
   # ImageMagic code:
 
   FileUtils.cp(params[:file][:tempfile], dest_filename)
-  puts ARGV
+
   if USE_IMAGE_MAGICK then
-    puts 'USING IMAGE MAGICK'
     image = MiniMagick::Image.open(dest_filename)
     image.resize '300x300'
     image.write("#{dest_filename}min300")
@@ -103,11 +102,11 @@ get '/user/:user/:image' do
   big_image = image.gsub('min300', '')
   image_path = File.join('/', user, image)
   big_image_path = File.join('/', user, big_image)
-
+  big_image_real_path = File.join(PUBLIC_FOLDER, big_image_path)
 
   # Show user's image
   erb :user_image, :locals => {
         :user => user,
-        :image => File.exist?(big_image_path) ? big_image_path : image_path,
+        :image => File.exist?(big_image_real_path) ? big_image_path : image_path,
       }
 end
